@@ -1,0 +1,16 @@
+<h2>Product Batches</h2>
+<div class="card">
+  <div class="badge">Total: <%= rows.length %></div>
+  <table>
+    <tr><th>No</th><th>Product</th><th>Produced</th><th>Expired</th><th>Qty</th></tr>
+    <% rows.forEach((r,index)=>{ %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><%= r.ProductName %></td>
+        <td><%= r.ProducedDate.toISOString ? r.ProducedDate.toISOString().slice(0,10) : r.ProducedDate %></td>
+        <td><%= r.ExpiredDate.toISOString ? r.ExpiredDate.toISOString().slice(0,10) : r.ExpiredDate %></td>
+        <td><%= r.Quantity %></td>
+      </tr>
+    <% }) %>
+  </table>
+</div>
