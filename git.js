@@ -51,6 +51,21 @@ async function ensureRepo() {
     fs.mkdirSync(PARENT_DIR, { recursive: true });
   }
 
+  // ถ้า folder มีอยู่แล้วแต่เป็น submodule → ลบทิ้ง
+  if (fs.existsSync(REPO_DIR)) {
+
+    const gitModules = path.join(REPO_DIR, '.git');
+
+    if (fs.existsSync(gitModules) && !fs.lstatSync(gitModules).isDirectory()) {
+
+      console.log('⚠️ Removing broken git submodule...');
+
+      fs.rmSync(REPO_DIR, { recursive: true, force: true });
+
+    }
+
+  }
+
   // clone repo ถ้ายังไม่มี
   if (!fs.existsSync(REPO_DIR)) {
 
@@ -87,7 +102,6 @@ async function ensureRepo() {
 
   const git = simpleGit(REPO_DIR);
 
-  // config user
   if (process.env.GIT_USER) {
     await git.addConfig('user.name', process.env.GIT_USER);
   }
@@ -96,23 +110,18 @@ async function ensureRepo() {
     await git.addConfig('user.email', process.env.GIT_EMAIL);
   }
 
-  // fetch remote
   await git.fetch(['origin']).catch(() => {});
 
-  // checkout branch ถ้ามีใช้เลย ถ้าไม่มีค่อยสร้าง
   try {
     await git.checkout(BRANCH);
   } catch {
     await git.checkoutLocalBranch(BRANCH);
   }
 
-  // pull ถ้ามี remote branch
   await git.pull('origin', BRANCH).catch(() => {});
 
-  // initial commit
   await initialCommitIfEmpty(REPO_DIR);
 
-  // push branch ถ้ายังไม่มีบน remote
   await git.push(['-u', 'origin', BRANCH]).catch(() => {});
 
   return git;
@@ -150,7 +159,6 @@ function toRawUrl(fileRelPath) {
   const parts = process.env.GIT_REMOTE.split('/');
 
   const user = parts[3];
-
   const repo = parts[4].replace('.git', '');
 
   return `https://raw.githubusercontent.com/${user}/${repo}/${BRANCH}/${fileRelPath.replace(/\\/g,'/')}`;
