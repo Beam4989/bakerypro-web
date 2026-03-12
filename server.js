@@ -1,34 +1,26 @@
 const express = require("express");
-const layouts = require("express-ejs-layouts");
-const methodOverride = require("method-override");
+const path = require("path");
 require("dotenv").config();
-
-require("./db");
 
 const app = express();
 
-app.set("view engine", "ejs");
-app.use(layouts);
-app.set("layout", "layout");
-
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride("_method"));
+
 app.use(express.static("public"));
 
-app.use("/", require("./routes/categories"));
+app.set("view engine", "ejs");
+
 app.use("/", require("./routes/products"));
+app.use("/", require("./routes/categories"));
 app.use("/", require("./routes/ingredients"));
 app.use("/", require("./routes/recipes"));
 app.use("/", require("./routes/batches"));
-app.use("/", require("./routes/actions"));
 app.use("/", require("./routes/ingredientMovements"));
+app.use("/", require("./routes/actions"));
 
-app.get("/", (req, res) => {
-  res.render("home");
-});
-
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 BakeryPro web running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

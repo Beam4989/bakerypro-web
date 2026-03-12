@@ -1,3 +1,4 @@
+// db.js
 const { Pool } = require("pg");
 require("dotenv").config();
 
@@ -10,6 +11,11 @@ const pool = new Pool({
 
 pool.connect()
   .then(() => console.log("✅ Connected to Supabase"))
-  .catch(err => console.error("❌ Database Error:", err));
+  .catch(err => console.log("❌ Database Error:", err));
 
-module.exports = pool;
+async function query(text, params = []) {
+  const res = await pool.query(text, params);
+  return res;
+}
+
+module.exports = { query };

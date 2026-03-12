@@ -1,14 +1,19 @@
-// routes/batches.js
-const router = require('express').Router();
-const { query } = require('../db');
+const router = require("express").Router();
+const { query } = require("../db");
 
-router.get('/batches', async (req, res) => {
+router.get("/batches", async (req, res) => {
+
   const rs = await query(`
-    SELECT pb.*, p.ProductName
-    FROM ProductBatch pb JOIN Product p ON p.ProductId = pb.ProductId
-    ORDER BY pb.ProductBatchId DESC
+    SELECT b.*, p."ProductName"
+    FROM "ProductBatch" b
+    JOIN "Product" p
+    ON p."ProductId" = b."ProductId"
   `);
-  res.render('batches/list', { rows: rs.recordset });
+
+  res.render("batches/list", {
+    rows: rs.rows
+  });
+
 });
 
 module.exports = router;
