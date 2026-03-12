@@ -1,4 +1,3 @@
-// db.js
 const { Pool } = require("pg");
 
 const pool = new Pool({
@@ -9,12 +8,7 @@ const pool = new Pool({
 });
 
 pool.connect()
-  .then(() => console.log("✅ Connected to Supabase PostgreSQL"))
+  .then(() => console.log("✅ Connected to Supabase"))
   .catch(err => console.log("❌ Database Error:", err));
 
-async function query(q, params = []) {
-  const result = await pool.query(q, params);
-  return result;
-}
-
-module.exports = { query };
+module.exports = pool;
