@@ -1,21 +1,46 @@
 // db.js
-const { Pool } = require("pg");
-require("dotenv").config();
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+
+// ฟังก์ชัน query แบบง่าย (ไว้ใช้แทน query เดิม)
+async function query(table, action, data = {}, filter = {}) {
+
+  let q = supabase.from(table);
+
+  if (action === "select") {
+    q = q.select(data.columns || "*");
+
+    if (filter.column) {
+      q = q.eq(filter.column, filter.value);
+    }
+
+    if (data.order) {
+      q = q.order(data.order);
+    }
   }
-});
 
-pool.connect()
-  .then(() => console.log("✅ Connected to Supabase"))
-  .catch(err => console.log("❌ Database Error:", err));
+  if (action === "insert") {
+    q = q.insert(data);
+  }
 
-async function query(text, params = []) {
-  const res = await pool.query(text, params);
-  return res;
+  if (action === "update") {
+    q = q.update(data).eq(filter.column, filter.value);
+  }
+
+  if (action === "delete") {
+    q = q.delete().eq(filter.column, filter.value);
+  }
+
+  const { data: result, error } = await q;
+
+  if (error) throw error;
+
+  return result;
 }
 
-module.exports = { query };
+module.exports = { supabase, query };

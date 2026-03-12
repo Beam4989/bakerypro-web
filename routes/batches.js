@@ -1,18 +1,27 @@
-const router = require("express").Router();
-const { query } = require("../db");
+// routes/batches.js
+const router = require('express').Router();
+const supabase = require('../supabase');
 
-router.get("/batches", async (req, res) => {
+router.get('/batches', async (req, res) => {
 
-  const rs = await query(`
-    SELECT b.*, p."ProductName"
-    FROM "ProductBatch" b
-    JOIN "Product" p
-    ON p."ProductId" = b."ProductId"
-  `);
+  const { data, error } = await supabase
+    .from('ProductBatch')
+    .select(`
+      ProductBatchId,
+      ProductId,
+      ProducedDate,
+      Quantity,
+      ExpiredDate,
+      Product(ProductName)
+    `)
+    .order('ProductBatchId', { ascending: false });
 
-  res.render("batches/list", {
-    rows: rs.rows
-  });
+  const rows = (data || []).map(r => ({
+    ...r,
+    ProductName: r.Product?.ProductName
+  }));
+
+  res.render('batches/list', { rows });
 
 });
 
