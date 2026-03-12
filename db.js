@@ -1,15 +1,15 @@
 const { Pool } = require("pg");
+require("dotenv").config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false,
-    require: true
+    rejectUnauthorized: false
   }
 });
 
 pool.connect()
   .then(() => console.log("✅ Connected to Supabase"))
-  .catch(err => console.log("❌ Database Error:", err));
+  .catch(err => console.error("❌ Database Error:", err));
 
 module.exports = pool;

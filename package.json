@@ -14,7 +14,6 @@
     "express-ejs-layouts": "^2.5.1",
     "method-override": "^3.0.0",
     "mime-types": "^3.0.1",
-    "mssql": "^10.0.2",
     "multer": "^2.0.2",
     "pg": "^8.20.0",
     "simple-git": "^3.30.0",
